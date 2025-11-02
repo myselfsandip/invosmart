@@ -1,9 +1,9 @@
 "use client"
 
-import DashboardCommand from "../dashboard/DashboardCommand";
+import DashboardCommand from "../DashboardCommand";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import { PanelLeftCloseIcon, PanelLeftIcon, UserIcon } from "lucide-react";
+import { LogOutIcon, PanelLeftCloseIcon, PanelLeftIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
@@ -71,11 +71,14 @@ function DashboardNavbar() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem onClick={() => { }}>
-                                    Profile
+                                <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
+                                    <UserIcon /> Profile
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
-                                    Logout
+                                <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
+                                    <SettingsIcon /> Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
+                                    <LogOutIcon /> Logout
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

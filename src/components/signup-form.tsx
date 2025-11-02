@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle } from "./ui/alert"
 import { authClient } from "@/server/auth/auth-client"
+import { toast } from "sonner"
 
 export function SignupForm({
     isModal = false,
@@ -49,8 +50,17 @@ export function SignupForm({
             try {
                 await authClient.signUp.email({
                     ...data,
-                })
-                router.push("/user");
+                },
+                    {
+                        onSuccess: (ctx) => {
+                            toast.success(`SignUp Successfull`);
+                            router.push("/user");
+                        },
+                        onError: (ctx) => {
+                            setError(ctx.error.message);
+                        }
+                    }
+                );
             } catch (error: any) {
                 setError(error.message || "An unexpected error occurred");
             }
@@ -62,13 +72,33 @@ export function SignupForm({
             authClient.signIn.social({
                 provider: 'github',
                 callbackURL: "/user"
-            })
+            },
+                {
+                    onSuccess: (ctx) => {
+                        toast.success(`SignUp Successfull`);
+                        router.push("/user");
+                    },
+                    onError: (ctx) => {
+                        setError(ctx.error.message);
+                    }
+                }
+            )
         },
         googleLogin: () => {
             authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/user"
-            })
+            },
+                {
+                    onSuccess: (ctx) => {
+                        toast.success(`SignUp Successfull`);
+                        router.push("/user");
+                    },
+                    onError: (ctx) => {
+                        setError(ctx.error.message);
+                    }
+                }
+            )
         }
     }
 

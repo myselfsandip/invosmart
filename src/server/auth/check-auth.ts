@@ -2,7 +2,7 @@ import { auth } from "@/server/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function requireAuth(redirectUrl: string = "/sign-in/user/") {
+export async function requireAuth(redirectUrl: string = "/signin") {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -13,7 +13,7 @@ export async function requireAuth(redirectUrl: string = "/sign-in/user/") {
 }
 
 
-export async function requireAdminAuth(redirectUrl: string = "/crm-admin/login") {
+export async function requireAdminAuth(redirectUrl: string = "/admin/login") {
     const session = await auth.api.getSession({
         headers: await headers(),
     });

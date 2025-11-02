@@ -1,5 +1,5 @@
-import { ChartAreaInteractive } from '@/components/overview/chart-area-interactive';
-import { SectionCards } from '@/components/overview/section-cards';
+import { ChartAreaInteractive } from '@/components/dashboard/chart-area-interactive';
+import { SectionCards } from '@/components/dashboard/section-cards';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { requireAuth } from '@/server/auth/check-auth';
@@ -24,6 +24,8 @@ export default async function page() {
                         <ChartAreaInteractive />
                     </div>
                     {/* <DataTable data={data} /> */}
+
+                    Recent Invoices Table
                 </div>
             </div>
         </div>

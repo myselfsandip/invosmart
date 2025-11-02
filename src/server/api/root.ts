@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc"
-import { exampleRouter } from "./routers/exampleRouter";
 import { z } from "zod";
+import { invoiceRouter } from "./routers/invoiceRouter";
 
 
 export const appRouter = createTRPCRouter({
@@ -15,7 +15,7 @@ export const appRouter = createTRPCRouter({
                 greeting: `hello ${opts.input.text}`,
             };
         }),
-    example: exampleRouter
+    invoice: invoiceRouter
 });
 
 

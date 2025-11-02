@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useLogout } from "@/hooks/use-logout";
 import { ChevronsUpDownIcon, CreditCard, Loader2, LogOut, Sparkles, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import GeneratedAvatar from "../GeneratedAvatar";
+import GeneratedAvatar from "./GeneratedAvatar";
 import { authClient } from "@/server/auth/auth-client";
 import { cn } from "@/lib/utils";
 

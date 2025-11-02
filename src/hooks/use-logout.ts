@@ -18,7 +18,7 @@ export function useLogout() {
             } else {
                 queryClient.clear(); //Clear Cache
                 toast.success("Logged out successfully");
-                window.location.href = '/login'; //using this instead of next/navigation to bypass login modal opening 
+                window.location.href = '/signin'; //using this instead of next/navigation to bypass login modal opening 
             }
         });
     };

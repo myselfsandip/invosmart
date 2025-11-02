@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
+import Logo from '../logo';
 
 const footerLinks = {
     product: [
@@ -27,12 +28,8 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                <FileText className="w-5 h-5 text-primary-foreground" />
-                            </div>
-                            <span className="text-xl font-bold">InvoSmart</span>
-                        </div>
+                        
+                        <Logo />
                         <p className="text-sm text-muted-foreground">
                             Modern invoice management for modern businesses
                         </p>

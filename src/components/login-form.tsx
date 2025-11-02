@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import {  useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { LoginFormData, loginSchema } from "@/lib/validations/auth"
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,6 +13,7 @@ import { authClient } from "@/server/auth/auth-client"
 import { EyeClosedIcon, EyeIcon, Github, OctagonAlertIcon } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Alert, AlertTitle } from "./ui/alert"
+import { toast } from "sonner"
 
 export function LoginForm({
     className,
@@ -40,11 +41,18 @@ export function LoginForm({
             await authClient.signIn.email({
                 email: data.email,
                 password: data.password,
+            }, {
+                onSuccess: (ctx) => {
+                    toast.success(`SignIn Successfull`);
+                    router.push("/user");
+                },
+                onError: (ctx) => {
+                    setError(ctx.error.message);
+                }
             }
             );
-            router.push("/user");
+
         } catch (error: any) {
-            setIsLoading(false);
             setError(error.message || "An unexpected error occurred");
         } finally {
             setIsLoading(false);
@@ -56,13 +64,33 @@ export function LoginForm({
             authClient.signIn.social({
                 provider: 'github',
                 callbackURL: "/user"
-            })
+            },
+                {
+                    onSuccess: (ctx) => {
+                        toast.success(`SignIn Successfull`);
+                        router.push("/user");
+                    },
+                    onError: (ctx) => {
+                        setError(ctx.error.message);
+                    }
+                }
+            )
         },
         googleLogin: () => {
             authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/user"
-            })
+            },
+                {
+                    onSuccess: (ctx) => {
+                        toast.success(`SignIn Successfull`);
+                        router.push("/user");
+                    },
+                    onError: (ctx) => {
+                        setError(ctx.error.message);
+                    }
+                }
+            )
         }
     }
 
@@ -146,7 +174,7 @@ export function LoginForm({
                                     />
                                 </div>
 
-                                
+
 
                                 {!!error && (
                                     <Alert className="bg-destructive/10 border-none">
