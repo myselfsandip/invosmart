@@ -14,11 +14,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useLogout } from "@/hooks/use-logout";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 
 function DashboardNavbar() {
     const { state, toggleSidebar, isMobile } = useSidebar();
     const [commandOpen, setCommandOpen] = useState(false);
+
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -48,10 +51,10 @@ function DashboardNavbar() {
                 "shadow-sm"
             )}>
                 <div>
-                    <Button 
-                        variant="outline" 
+                    <Button
+                        variant="outline"
                         size="icon"
-                        className="size-9 hover:bg-accent hover:scale-105 transition-all shadow-sm border-border/40" 
+                        className="size-9 hover:bg-accent hover:scale-105 transition-all shadow-sm border-border/40"
                         onClick={toggleSidebar}
                     >
                         {(state === 'collapsed' || isMobile) ? <PanelLeftIcon className="size-4" /> : <PanelLeftCloseIcon className="size-4" />}
@@ -62,8 +65,8 @@ function DashboardNavbar() {
                     <div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     size="icon"
                                     className="hover:bg-accent hover:scale-105 transition-all shadow-sm border-border/40"
                                 >
@@ -74,7 +77,7 @@ function DashboardNavbar() {
                                 {/* <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
                                     <UserIcon /> Profile
                                 </DropdownMenuItem> */}
-                                <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
+                                <DropdownMenuItem onClick={() => router.push('/user/settings')} className="cursor-pointer">
                                     <SettingsIcon /> Settings
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive cursor-pointer">
