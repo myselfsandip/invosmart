@@ -113,7 +113,7 @@ const PaymentsPage = () => {
     }));
 
     return (
-        <div className="container max-w-6xl py-6 space-y-4">
+        <div className="container py-6 space-y-4">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">Payments</h1>

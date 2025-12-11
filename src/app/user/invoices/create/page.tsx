@@ -235,7 +235,7 @@ const CreateInvoicePage = () => {
     };
 
     return (
-        <div className="container max-w-6xl py-6">
+        <div className="container py-6">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-3xl font-bold">Create Invoice</h1>
@@ -445,7 +445,7 @@ const CreateInvoicePage = () => {
                                                         render={({ field }) => (
                                                             <FormItem>
                                                                 <FormControl>
-                                                                    <Input {...field} placeholder="Item name"  />
+                                                                    <Input {...field} placeholder="Item name" />
                                                                 </FormControl>
                                                             </FormItem>
                                                         )}
