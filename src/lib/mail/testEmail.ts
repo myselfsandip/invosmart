@@ -5,7 +5,7 @@ export const sendTestEmail = async (to: string): Promise<void> => {
     try {
         const transporter = createTransporter();
 
-        const subject = "Test Email from Indomitech Boilerplate";
+        const subject = "Test Email from Boilerplate";
         const htmlBody = `
 <!DOCTYPE html>
 <html>
@@ -51,7 +51,7 @@ export const sendTestEmail = async (to: string): Promise<void> => {
     <p>Keep building with confidence 🚀</p>
 
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} Indomitech Group. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} Sandip Singha. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -65,7 +65,7 @@ If you received this message, your Nodemailer transporter is working correctly!
 
 Keep building with confidence 🚀
 
-- Indomitech Group`;
+- Sandip Singha`;
 
         const fromEmail = process.env.NODEMAILER_EMAIL;
 

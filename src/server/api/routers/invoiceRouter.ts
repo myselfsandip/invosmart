@@ -1,148 +1,253 @@
-import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, } from "../trpc";
 import { db } from "@/server/db";
-import { invoiceItems, invoices } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
-import { invoiceCreateSchema, invoiceUpdateSchema } from "@/lib/validations/invoice";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { invoices, invoiceItems, customers, businessInfo, userBank } from "@/server/db/schema";
+import { and, desc, eq } from "drizzle-orm";
+import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { invoiceCreateSchema } from "@/lib/validations/invoice";
 
+export const invoicesRouter = createTRPCRouter({
+    getAll: protectedProcedure.query(async ({ ctx }) => {
+        return await db
+            .select({
+                id: invoices.id,
+                invoiceNumber: invoices.invoiceNumber,
+                issueDate: invoices.issueDate,
+                dueDate: invoices.dueDate,
+                totalAmount: invoices.totalAmount,
+                status: invoices.status,
+                customer: {
+                    id: customers.id,
+                    name: customers.name,
+                    email: customers.email,
+                },
+            })
+            .from(invoices)
+            .leftJoin(customers, eq(invoices.customerId, customers.id))
+            .where(eq(invoices.userId, ctx.auth.user.id))
+            .orderBy(desc(invoices.createdAt)); // Show newest first
+    }),
 
-
-export const invoiceRouter = createTRPCRouter({
-    getAll: protectedProcedure
-        .query(async ({ ctx }) => {
-            const userId = ctx.auth.user.id;
-            return await db.select().from(invoices)
-                .innerJoin(invoiceItems, eq(invoices.id, invoiceItems.invoiceId))
-                .where(eq(invoices.userId, userId));
-        }),
     getOne: protectedProcedure
-        .input(z.object({
-            invoiceId: z.string().trim().min(1, { message: "Invoice ID is required" }),
-        }))
+        .input(z.object({ invoiceId: z.string().trim().min(1) }))
         .query(async ({ input, ctx }) => {
-            const userId = ctx.auth.user.id;
-            const [result] = await db.select().from(invoices)
-                .innerJoin(invoiceItems, eq(invoices.id, invoiceItems.invoiceId))
-                .where(and(eq(invoices.id, input.invoiceId), eq(invoices.userId, userId)))
+            const [invoice] = await db
+                .select()
+                .from(invoices)
+                .where(
+                    and(
+                        eq(invoices.id, input.invoiceId),
+                        eq(invoices.userId, ctx.auth.user.id)
+                    )
+                )
                 .limit(1);
-            if (!result) {
+
+            if (!invoice) {
                 throw new TRPCError({
                     code: "NOT_FOUND",
-                    message: "Invoice not found"
-                })
+                    message: "Invoice not found",
+                });
             }
-            return result;
+
+            const items = await db
+                .select()
+                .from(invoiceItems)
+                .where(eq(invoiceItems.invoiceId, invoice.id));
+
+            const [customer] = await db
+                .select()
+                .from(customers)
+                .where(eq(customers.id, invoice.customerId));
+
+            const [business] = await db
+                .select()
+                .from(businessInfo)
+                .where(eq(businessInfo.userId, ctx.auth.user.id))
+                .limit(1);
+
+            const [bank] = await db
+                .select()
+                .from(userBank)
+                .where(eq(userBank.userId, ctx.auth.user.id))
+                .limit(1);
+
+            return {
+                ...invoice,
+                items,
+                customer,
+                businessInfo: business || null,
+                bankInfo: bank || null,
+            };
         }),
+
+
     create: protectedProcedure
         .input(invoiceCreateSchema)
         .mutation(async ({ input, ctx }) => {
-            return await db.transaction(async (tx) => {
-                const [createdInvoice] = await tx.insert(invoices).values({
-                    invoiceNumber: input.invoiceNumber,
-                    userId: ctx.auth.user.id,
-                    customerId: input.customerId,
-                    issueDate: input.issueDate,
-                    dueDate: input.dueDate,
-                    subTotal: input.subTotal,
-                    discount: input.discount,
-                    totalAmount: input.totalAmount,
-                    notes: input.notes,
-                    cgst: input.cgst ?? 0,
-                    sgst: input.sgst ?? 0,
-                    igst: input.igst ?? 0,
-                }).returning();
+            const userId = ctx.auth.user.id;
+            const { items, ...invoiceData } = input;
 
-                await Promise.all(
-                    input.items.map((item) =>
-                        tx.insert(invoiceItems).values({
-                            invoiceId: createdInvoice.id,
-                            hsnCode: item.hsnCode ?? '',
-                            quantity: item.quantity,
-                            unitPrice: item.unitPrice,
-                            discount: item.discount,
-                            cgst: item.tax,
-                            sgst: item.gst,
-                            total: item.total,
-                        })
-                    )
-                );
-                return createdInvoice;
-            })
-        }),
-    update: protectedProcedure
-        .input(z.object({
-            invoiceId: z.string().trim().min(1, { message: "Invoice id is required" }),
-        }).extend(invoiceUpdateSchema.shape))
-        .mutation(async function ({ input, ctx }) {
-            return await db.transaction(async (tx) => {
-                //Step 1 - Update Invoice data
-                const [updatedInvoice] = await tx.update(invoices).set({
-                    invoiceNumber: input.invoiceNumber,
-                    userId: ctx.auth.user.id,
-                    customerId: input.customerId,
-                    issueDate: input.issueDate,
-                    dueDate: input.dueDate,
-                    subTotal: input.subTotal,
-                    discount: input.discount,
-                    totalAmount: input.totalAmount,
-                    notes: input.notes,
-                    cgst: input.cgst ?? 0,
-                    sgst: input.sgst ?? 0,
-                    igst: input.igst ?? 0,
-                })
-                    .where(and(eq(invoices.id, input.invoiceId), eq(invoices.userId, ctx.auth.user.id)))
+            const [existing] = await db
+                .select()
+                .from(invoices)
+                .where(eq(invoices.invoiceNumber, input.invoiceNumber))
+                .limit(1);
+
+            if (existing) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: "Invoice number already exists",
+                });
+            }
+
+            const result = await db.transaction(async (tx) => {
+                const [createdInvoice] = await tx
+                    .insert(invoices)
+                    .values({
+                        userId,
+                        ...invoiceData,
+                    })
                     .returning();
 
-                if (!updatedInvoice) {
-                    throw new TRPCError({
-                        code: "NOT_FOUND",
-                        message: "Invoice not found or you lack permission to update it"
-                    })
-                }
-                //Delete the existing items then add the new items 
-                await tx.delete(invoiceItems).where(eq(invoiceItems.invoiceId, input.invoiceId));
-                // Insert Parallaly
-                await Promise.all(
-                    input.items.map(item => {
-                        const base = item.unitPrice * item.quantity;
-                        const taxAmount = base * ((item.tax ?? 0) + (item.gst ?? 0)) / 100;
-                        const total = (base * (1 - item.discount / 100)) + taxAmount;
-                        return tx.insert(invoiceItems).values({
-                            invoiceId: input.invoiceId,
-                            hsnCode: item.hsnCode,
+                if (items && items.length > 0) {
+                    await tx.insert(invoiceItems).values(
+                        items.map((item) => ({
+                            invoiceId: createdInvoice.id,
+                            name: item.name,
                             quantity: item.quantity,
+                            hsnCode: item.hsnCode || null,
                             unitPrice: item.unitPrice,
                             discount: item.discount,
-                            cgst: item.tax,
-                            sgst: item.gst,
-                            total: total,
-                        });
-                    }
-                    )
-                );
-                return updatedInvoice;
-            })
+                            cgst: item.cgst,
+                            sgst: item.sgst,
+                            igst: item.igst,
+                            taxAmount: item.taxAmount,
+                            total: item.total,
+                        }))
+                    );
+                }
+
+                return createdInvoice;
+            });
+
+            return result;
         }),
-    delete: protectedProcedure
-        .input(z.object({
-            invoiceId: z.string().trim().min(1, { message: "Invoice id is required" }),
-        }))
+
+    update: protectedProcedure
+        .input(
+            z.object({
+                invoiceId: z.string().trim().min(1),
+            }).merge(invoiceCreateSchema)
+        )
         .mutation(async ({ input, ctx }) => {
-            return await db.transaction(async (tx) => {
-                const result = await tx.delete(invoices)
-                    .where(and(
+            const { invoiceId, items, ...invoiceData } = input;
+
+            // Verify ownership
+            const [existing] = await db
+                .select()
+                .from(invoices)
+                .where(
+                    and(
+                        eq(invoices.id, invoiceId),
+                        eq(invoices.userId, ctx.auth.user.id)
+                    )
+                )
+                .limit(1);
+
+            if (!existing) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Invoice not found",
+                });
+            }
+
+            // Update invoice and items in a transaction
+            const result = await db.transaction(async (tx) => {
+                const [updatedInvoice] = await tx
+                    .update(invoices)
+                    .set(invoiceData)
+                    .where(eq(invoices.id, invoiceId))
+                    .returning();
+
+                await tx
+                    .delete(invoiceItems)
+                    .where(eq(invoiceItems.invoiceId, invoiceId));
+
+                if (items && items.length > 0) {
+                    await tx.insert(invoiceItems).values(
+                        items.map((item) => ({
+                            invoiceId: updatedInvoice.id,
+                            name: item.name,
+                            quantity: item.quantity,
+                            hsnCode: item.hsnCode || null,
+                            unitPrice: item.unitPrice,
+                            discount: item.discount,
+                            cgst: item.cgst,
+                            sgst: item.sgst,
+                            igst: item.igst,
+                            taxAmount: item.taxAmount,
+                            total: item.total,
+                        }))
+                    );
+                }
+
+                return updatedInvoice;
+            });
+
+            return result;
+        }),
+
+    delete: protectedProcedure
+        .input(z.object({ invoiceId: z.string().trim().min(1) }))
+        .mutation(async ({ input, ctx }) => {
+            const [deleted] = await db
+                .delete(invoices)
+                .where(
+                    and(
                         eq(invoices.id, input.invoiceId),
                         eq(invoices.userId, ctx.auth.user.id)
-                    ))
-                    .returning({ id: invoices.id });
-                if (result.length === 0) {
-                    throw new TRPCError({ code: "NOT_FOUND", message: "Invoice not found or you lack permission to delete it" });
-                }
-                return { success: true, deletedId: result[0].id };
-            });
+                    )
+                )
+                .returning({ id: invoices.id, invoiceNumber: invoices.invoiceNumber });
+
+            if (!deleted) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Invoice not found",
+                });
+            }
+
+            return deleted;
+        }),
+
+    updateStatus: protectedProcedure
+        .input(
+            z.object({
+                invoiceId: z.string().trim().min(1),
+                status: z.enum(["due", "partially_paid", "paid"]),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const [updated] = await db
+                .update(invoices)
+                .set({ status: input.status })
+                .where(
+                    and(
+                        eq(invoices.id, input.invoiceId),
+                        eq(invoices.userId, ctx.auth.user.id)
+                    )
+                )
+                .returning();
+
+            if (!updated) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Invoice not found",
+                });
+            }
+
+            return updated;
         }),
 });
 
-
-export type invoiceRouterType = typeof invoiceRouter;
+export type InvoicesRouterType = typeof invoicesRouter;

@@ -71,9 +71,9 @@ function DashboardNavbar() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
+                                {/* <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
                                     <UserIcon /> Profile
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
                                 <DropdownMenuItem onClick={() => { }} className="cursor-pointer">
                                     <SettingsIcon /> Settings
                                 </DropdownMenuItem>

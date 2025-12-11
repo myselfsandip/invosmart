@@ -1,31 +1,24 @@
 "use client"
-import { 
-    FileTextIcon, 
-    LayoutDashboard, 
-    Package, 
-    FileText, 
-    Receipt, 
+import {
+    FileTextIcon,
+    LayoutDashboard,
+    FileText,
     Users,
     CreditCard,
     Wallet,
-    BarChart3,
-    Zap,
-    Bot,
-    UserCog,
     Settings,
     ChevronDown,
-    DollarSign,
-    TrendingUp
+    ChartLine
 } from "lucide-react";
-import { 
-    SidebarContent, 
-    SidebarFooter, 
-    SidebarGroup, 
-    SidebarGroupContent, 
-    SidebarHeader, 
-    SidebarMenu, 
-    SidebarMenuButton, 
-    SidebarMenuItem, 
+import {
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
     Sidebar,
     SidebarMenuSub,
     SidebarMenuSubItem,
@@ -47,82 +40,46 @@ function DashboardSidebar() {
             href: "/user/dashboard",
         },
         {
+            icon: Users,
+            label: "Customers",
+            href: "/user/customers",
+        },
+        {
             icon: FileText,
             label: "Invoices",
             href: "/user/invoices",
             subItems: [
                 { label: "Create Invoice", href: "/user/invoices/create" },
                 { label: "View All", href: "/user/invoices" },
-                { label: "Draft Invoices", href: "/user/invoices/drafts" },
-                { label: "Overdue", href: "/user/invoices/overdue" }
-            ]
-        },
-        {
-            icon: Users,
-            label: "Customers",
-            href: "/user/customers",
-            subItems: [
-                { label: "All Customers", href: "/user/customers" },
-                { label: "Add Customer", href: "/user/customers/add" },
-                { label: "Outstanding Balance", href: "/user/customers/outstanding" }
-            ]
-        },
-        {
-            icon: CreditCard,
-            label: "Payments",
-            href: "/user/payments",
-            subItems: [
-                { label: "All Transactions", href: "/user/payments" },
-                { label: "Pending", href: "/user/payments/pending" },
-                { label: "Completed", href: "/user/payments/completed" }
             ]
         },
         {
             icon: Wallet,
-            label: "Expenses",
-            href: "/user/expenses",
-            subItems: [
-                { label: "View Expenses", href: "/user/expenses" },
-                { label: "Add Expense", href: "/user/expenses/add" },
-                { label: "Categories", href: "/user/expenses/categories" }
-            ]
-        },
-        {
-            icon: BarChart3,
-            label: "Analytics",
-            href: "/user/analytics",
-            subItems: [
-                { label: "Overview", href: "/user/analytics" },
-                { label: "Income Report", href: "/user/analytics/income" },
-                { label: "Expense Report", href: "/user/analytics/expenses" },
-                { label: "Profit & Loss", href: "/user/analytics/profit-loss" },
-                { label: "Top Customers", href: "/user/analytics/customers" }
-            ]
+            label: "Payments",
+            href: "/user/payments",
+            
         },
         // {
-        //     icon: Zap,
-        //     label: "Automation",
-        //     href: "/user/automation",
-        //     subItems: [
-        //         { label: "Reminders", href: "/user/automation/reminders" },
-        //         { label: "Scheduled Emails", href: "/user/automation/emails" },
-        //     ]
+        //     icon: Wallet,
+        //     label: "Income",
+        //     href: "/user/incomes",
+            
+        // },
+        // {
+        //     icon: Wallet,
+        //     label: "Expense",
+        //     href: "/user/expenses",
         // },
         {
-            icon: Bot,
-            label: "AI Insights",
-            href: "/user/ai-insights",
-        },
-        {
-            icon: Package,
-            label: "Products",
-            href: "/user/products",
+            icon: ChartLine,
+            label: "Report",
+            href: "/user/report",
         },
         {
             icon: Settings,
             label: "Settings",
             href: "/user/settings",
-            
+
         }
     ];
 

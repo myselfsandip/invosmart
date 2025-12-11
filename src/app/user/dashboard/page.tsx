@@ -1,15 +1,7 @@
 import { ChartAreaInteractive } from '@/components/dashboard/chart-area-interactive';
 import { SectionCards } from '@/components/dashboard/section-cards';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { requireAuth } from '@/server/auth/check-auth';
-import {
-    FileUserIcon,
-    FileEditIcon,
-    CheckCircleIcon,
-    TrendingUp,
 
-} from 'lucide-react';
 
 export default async function page() {
     await requireAuth();
@@ -23,9 +15,6 @@ export default async function page() {
                     <div className="px-4 lg:px-6">
                         <ChartAreaInteractive />
                     </div>
-                    {/* <DataTable data={data} /> */}
-
-                    Recent Invoices Table
                 </div>
             </div>
         </div>

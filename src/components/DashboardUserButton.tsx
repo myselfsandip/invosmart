@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 function DashboardUserButton() {
     const { logout } = useLogout();
 
+    const router = useRouter();
+
     const { data, isPending } = authClient.useSession();
 
     if (isPending) {
@@ -103,7 +105,7 @@ function DashboardUserButton() {
                         "transition-all duration-200",
                         "group/item"
                     )}
-                    onClick={() => console.log('Profile')}
+                    onClick={() => router.push("/user/settings")}
                 >
                     <span className="flex items-center gap-3 text-sm font-medium">
                         <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover/item:bg-primary/20 transition-colors">

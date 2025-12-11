@@ -2,11 +2,9 @@
 
 import * as React from "react"
 import { CalendarIcon } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
     Popover,
     PopoverContent,
@@ -32,13 +30,24 @@ function isValidDate(date: Date | undefined) {
     return !isNaN(date.getTime())
 }
 
-export function DatePicker() {
+interface DatePickerProps {
+    date?: Date
+    onSelect?: (date: Date | undefined) => void
+    placeholder?: string
+}
+
+export function DatePicker({ date, onSelect, placeholder = "Select date" }: DatePickerProps) {
     const [open, setOpen] = React.useState(false)
-    const [date, setDate] = React.useState<Date | undefined>(
-        new Date("2025-06-01")
-    )
     const [month, setMonth] = React.useState<Date | undefined>(date)
     const [value, setValue] = React.useState(formatDate(date))
+
+    // Sync internal state when external date changes
+    React.useEffect(() => {
+        setValue(formatDate(date))
+        if (date) {
+            setMonth(date)
+        }
+    }, [date])
 
     return (
         <div className="flex flex-col gap-3">
@@ -46,14 +55,14 @@ export function DatePicker() {
                 <Input
                     id="date"
                     value={value}
-                    placeholder="June 01, 2025"
+                    placeholder={placeholder}
                     className="bg-background pr-10"
                     onChange={(e) => {
-                        const date = new Date(e.target.value)
+                        const newDate = new Date(e.target.value)
                         setValue(e.target.value)
-                        if (isValidDate(date)) {
-                            setDate(date)
-                            setMonth(date)
+                        if (isValidDate(newDate)) {
+                            onSelect?.(newDate)
+                            setMonth(newDate)
                         }
                     }}
                     onKeyDown={(e) => {
@@ -69,6 +78,7 @@ export function DatePicker() {
                             id="date-picker"
                             variant="ghost"
                             className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                            type="button"
                         >
                             <CalendarIcon className="size-3.5" />
                             <span className="sr-only">Select date</span>
@@ -86,9 +96,9 @@ export function DatePicker() {
                             captionLayout="dropdown"
                             month={month}
                             onMonthChange={setMonth}
-                            onSelect={(date) => {
-                                setDate(date)
-                                setValue(formatDate(date))
+                            onSelect={(selectedDate) => {
+                                onSelect?.(selectedDate)
+                                setValue(formatDate(selectedDate))
                                 setOpen(false)
                             }}
                         />
