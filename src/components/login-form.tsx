@@ -67,7 +67,6 @@ export function LoginForm({
             },
                 {
                     onSuccess: (ctx) => {
-                        toast.success(`SignIn Successfull`);
                         router.push("/user");
                     },
                     onError: (ctx) => {
@@ -83,7 +82,6 @@ export function LoginForm({
             },
                 {
                     onSuccess: (ctx) => {
-                        toast.success(`SignIn Successfull`);
                         router.push("/user");
                     },
                     onError: (ctx) => {

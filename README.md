@@ -51,14 +51,13 @@ It features **multi-tenant architecture**, **role-based access control**, **live
 
 | Layer          | Technology                                       |
 | -------------- | ------------------------------------------------ |
-| **Frontend**   | Next.js 14 (App Router), TypeScript, TailwindCSS |
-| **Backend**    | tRPC, Express-style routes                       |
+| **Frontend**   | Next.js 16 (App Router), TypeScript, TailwindCSS, Tanstack Query |
+| **Backend**    | tRPC                     |
 | **ORM**        | Drizzle ORM (PostgreSQL)                         |
 | **Database**   | PostgreSQL                                       |
 | **Payments**   | Razorpay API                                     |
-| **Auth**       | NextAuth.js (JWT, OAuth ready)                   |
-| **Charts**     | Recharts / Chart.js                              |
-| **Deployment** | Vercel (frontend), Railway / Render (backend DB) |
+| **Auth**       | Better Auth                                      |
+| **Deployment** | Vercel                                           |
 
 ---
 

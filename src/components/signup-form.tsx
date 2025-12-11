@@ -75,7 +75,6 @@ export function SignupForm({
             },
                 {
                     onSuccess: (ctx) => {
-                        toast.success(`SignUp Successfull`);
                         router.push("/user");
                     },
                     onError: (ctx) => {
@@ -91,7 +90,6 @@ export function SignupForm({
             },
                 {
                     onSuccess: (ctx) => {
-                        toast.success(`SignUp Successfull`);
                         router.push("/user");
                     },
                     onError: (ctx) => {
